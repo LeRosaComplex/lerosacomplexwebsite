@@ -20,17 +20,17 @@ jobs:
           import json, urllib.request
           from datetime import datetime, timezone, timedelta
 
-          # Cape Town coordinates (adjust if needed)
+          # Kraaifontein, Cape Town coordinates
           url = "https://open-meteo.com"
           req = urllib.request.urlopen(url)
-          data = json.loads(req.read().decode("utf-8"))["current_weather"]
+          data = json.loads(req.read().decode("utf-8"))["current"]
 
           sast = timezone(timedelta(hours=2))
           now_str = datetime.now(sast).strftime("%H:%M SAST")
 
           output = {
-              "temperature": data["temperature"],
-              "windspeed": data["windspeed"],
+              "temperature": data["temperature_2m"],
+              "windspeed": data["wind_speed_10m"],
               "updated_at": now_str
           }
 
@@ -44,4 +44,3 @@ jobs:
           git config user.email "bot@://github.com"
           git add data/weather.json
           git diff --quiet && git diff --staged --quiet || (git commit -m "Auto-update weather" && git push)
-
