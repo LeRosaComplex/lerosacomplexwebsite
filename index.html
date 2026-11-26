@@ -1,0 +1,107 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Complex Information Portal</title>
+  <style>
+    :root { --primary: #1e3a5f; --accent: #2b6cb0; --bg: #f4f6f9; --card: #ffffff; --text: #2d3748; }
+    body { font-family: system-ui, -apple-system, sans-serif; margin: 0; background: var(--bg); color: var(--text); line-height: 1.6; }
+    header { background: var(--primary); color: white; text-align: center; padding-bottom: 1.5rem; }
+    header img { width: 100%; max-height: 280px; object-fit: cover; display: block; margin-bottom: 1rem; }
+    .container { max-width: 900px; margin: 1.5rem auto; padding: 0 1rem; display: grid; gap: 1.5rem; }
+    .card { background: var(--card); padding: 1.5rem; border-radius: 8px; box-shadow: 0 2px 6px rgba(0,0,0,0.06); }
+    h1, h2, h3 { margin-top: 0; }
+    .btn { display: inline-block; background: var(--accent); color: white; padding: 0.75rem 1.25rem; border-radius: 6px; text-decoration: none; font-weight: 600; margin-right: 0.5rem; margin-top: 0.5rem; }
+    .btn-outline { background: transparent; border: 2px solid white; }
+    .grid-2 { display: grid; grid-template-columns: repeat(auto-fit, minmax(280px, 1fr)); gap: 1.5rem; }
+    .notice { border-left: 4px solid var(--accent); padding-left: 1rem; margin-bottom: 1rem; }
+    .weather-badge { background: #ebf8ff; color: #2c5282; padding: 0.75rem 1rem; border-radius: 6px; font-weight: 600; }
+  </style>
+</head>
+<body>
+
+<header>
+  <img id="banner" src="" alt="Complex Banner" onerror="this.style.display='none'" />
+  <h1 id="complex-name">Loading...</h1>
+  <p id="tagline"></p>
+  <div>
+    <a id="wcu-link" href="#" target="_blank" class="btn">Owner & Trustee Login (WeConnectU)</a>
+    <a id="email-link" href="#" class="btn btn-outline">Email Trustees</a>
+  </div>
+</header>
+
+<main class="container">
+  <div class="weather-badge" id="weather-box">Loading local Cape Town weather...</div>
+
+  <section class="card">
+    <h2>Latest Notices</h2>
+    <div id="notices-list"></div>
+  </section>
+
+  <div class="grid-2">
+    <section class="card">
+      <h2>Managing Agent</h2>
+      <p><strong>Agency:</strong> <span id="ma-name"></span></p>
+      <p><strong>Portfolio Manager:</strong> <span id="ma-manager"></span></p>
+      <p><strong>Email:</strong> <a id="ma-email" href="#"></a></p>
+      <p><strong>Office Tel:</strong> <span id="ma-phone"></span></p>
+      <p><strong>After-Hours Emergency:</strong> <span id="ma-emergency"></span></p>
+    </section>
+
+    <section class="card">
+      <h2>Essential Complex Info</h2>
+      <p><strong>Bin Collection:</strong> <span id="info-bins"></span></p>
+      <p><strong>Security Control Room:</strong> <span id="info-security"></span></p>
+      <p><strong>Municipal Faults:</strong> <span id="info-municipal"></span></p>
+    </section>
+  </div>
+</main>
+
+<script>
+  async function loadSite() {
+    const res = await fetch('site-config.json?v=' + Date.now());
+    const cfg = await res.json();
+
+    document.title = cfg.complex_name;
+    document.getElementById('complex-name').textContent = cfg.complex_name;
+    document.getElementById('tagline').textContent = cfg.tagline;
+    document.getElementById('banner').src = cfg.banner_image;
+    document.getElementById('wcu-link').href = cfg.weconnectu_url;
+    document.getElementById('email-link').href = 'mailto:' + cfg.trustee_group_email;
+
+    document.getElementById('ma-name').textContent = cfg.managing_agent.agency_name;
+    document.getElementById('ma-manager').textContent = cfg.managing_agent.portfolio_manager;
+    const maEmail = document.getElementById('ma-email');
+    maEmail.textContent = cfg.managing_agent.email;
+    maEmail.href = 'mailto:' + cfg.managing_agent.email;
+    document.getElementById('ma-phone').textContent = cfg.managing_agent.office_phone;
+    document.getElementById('ma-emergency').textContent = cfg.managing_agent.after_hours_emergency;
+
+    document.getElementById('info-bins').textContent = cfg.important_info.bin_collection_day;
+    document.getElementById('info-security').textContent = cfg.important_info.security_control_room;
+    document.getElementById('info-municipal').textContent = cfg.important_info.municipal_faults;
+
+    const noticesDiv = document.getElementById('notices-list');
+    noticesDiv.innerHTML = cfg.notices.map(n => `
+      <div class="notice">
+        <h3>${n.title} <small style="color:#718096; font-weight:normal;">(${n.date})</small></h3>
+        <p>${n.message}</p>
+      </div>
+    `).join('');
+
+    try {
+      const wRes = await fetch('data/weather.json?v=' + Date.now());
+      const w = await wRes.json();
+      if (w.temperature !== undefined) {
+        document.getElementById('weather-box').textContent =
+          `Local Weather (Cape Town): ${w.temperature}°C | Wind: ${w.windspeed} km/h (Updated: ${w.updated_at})`;
+      }
+    } catch (e) {
+      document.getElementById('weather-box').style.display = 'none';
+    }
+  }
+  loadSite();
+</script>
+</body>
+</html>
