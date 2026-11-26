@@ -91,15 +91,16 @@
     `).join('');
 
     try {
-      const wRes = await fetch('data/weather.json?v=' + Date.now());
-      const w = await wRes.json();
-      if (w.temperature !== undefined) {
+      const wRes = await fetch('https://open-meteo.com');
+      const wData = await wRes.json();
+      if (wData.current) {
         document.getElementById('weather-box').textContent =
-          `Local Weather (Cape Town): ${w.temperature}°C | Wind: ${w.windspeed} km/h (Updated: ${w.updated_at})`;
+          `Local Weather (Kraaifontein): ${wData.current.temperature_2m}°C | Wind: ${wData.current.wind_speed_10m} km/h`;
       }
     } catch (e) {
       document.getElementById('weather-box').style.display = 'none';
     }
+
   }
   loadSite();
 </script>
