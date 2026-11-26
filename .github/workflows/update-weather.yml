@@ -23,11 +23,18 @@ jobs:
           url = "https://met.no"
           req = urllib.request.Request(
               url,
-              headers={"User-Agent": "ComplexWebsiteBot/1.0 github.com"}
+              headers={
+                  "User-Agent": "LeRosaComplexPortal/1.0 (contact@lerosa.co.za)",
+                  "Accept": "application/json"
+              }
           )
-          with urllib.request.urlopen(req) as response:
-              raw = json.loads(response.read().decode("utf-8"))
-              details = raw["properties"]["timeseries"][0]["data"]["instant"]["details"]
+          with urllib.request.urlopen(req, timeout=15) as response:
+              body = response.read().decode("utf-8").strip()
+              if not body:
+                  raise ValueError("API returned an empty body")
+              raw = json.loads(body)
+
+          details = raw["properties"]["timeseries"][0]["data"]["instant"]["details"]
 
           sast = timezone(timedelta(hours=2))
           now_str = datetime.now(sast).strftime("%H:%M SAST")
