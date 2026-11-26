@@ -14,27 +14,25 @@ jobs:
     steps:
       - uses: actions/checkout@v4
 
-      - name: Run Python weather fetch
+      - name: Fetch Kraaifontein weather
         run: |
+          curl -sS -A "ComplexWeatherPortal/1.0 (https://github.com)" \
+            "https://met.no" \
+            -o raw_weather.json
+
           python3 - << 'EOF'
-          import json, urllib.request
+          import json
           from datetime import datetime, timezone, timedelta
 
-          url = "https://met.no"
-          req = urllib.request.Request(
-              url,
-              headers={
-                  "User-Agent": "LeRosaComplexPortal/1.0 (contact@lerosa.co.za)",
-                  "Accept": "application/json"
-              }
-          )
-          with urllib.request.urlopen(req, timeout=15) as response:
-              body = response.read().decode("utf-8").strip()
-              if not body:
-                  raise ValueError("API returned an empty body")
-              raw = json.loads(body)
+          with open("raw_weather.json", "r", encoding="utf-8") as f:
+              text = f.read()
 
-          details = raw["properties"]["timeseries"][0]["data"]["instant"]["details"]
+          if not text.strip():
+              raise RuntimeError("Empty response from weather API")
+
+          raw = json.loads(text)
+          first_entry = raw["properties"]["timeseries"][0]
+          details = first_entry["data"]["instant"]["details"]
 
           sast = timezone(timedelta(hours=2))
           now_str = datetime.now(sast).strftime("%H:%M SAST")
@@ -45,9 +43,11 @@ jobs:
               "updated_at": now_str
           }
 
-          with open("data/weather.json", "w") as f:
+          with open("data/weather.json", "w", encoding="utf-8") as f:
               json.dump(output, f, indent=2)
           EOF
+
+          rm -f raw_weather.json
 
       - name: Commit updated weather
         run: |
