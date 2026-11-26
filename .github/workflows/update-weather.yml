@@ -1,1 +1,47 @@
+name: Update Local Weather
+
+on:
+  schedule:
+    - cron: '*/30 * * * *'
+  workflow_dispatch:
+
+permissions:
+  contents: write
+
+jobs:
+  fetch-weather:
+    runs-on: ubuntu-latest
+    steps:
+      - uses: actions/checkout@v4
+
+      - name: Run Python weather fetch
+        run: |
+          python3 - << 'EOF'
+          import json, urllib.request
+          from datetime import datetime, timezone, timedelta
+
+          # Cape Town coordinates (adjust if needed)
+          url = "https://open-meteo.com"
+          req = urllib.request.urlopen(url)
+          data = json.loads(req.read().decode("utf-8"))["current_weather"]
+
+          sast = timezone(timedelta(hours=2))
+          now_str = datetime.now(sast).strftime("%H:%M SAST")
+
+          output = {
+              "temperature": data["temperature"],
+              "windspeed": data["windspeed"],
+              "updated_at": now_str
+          }
+
+          with open("data/weather.json", "w") as f:
+              json.dump(output, f, indent=2)
+          EOF
+
+      - name: Commit updated weather
+        run: |
+          git config user.name "Complex Automation Bot"
+          git config user.email "bot@://github.com"
+          git add data/weather.json
+          git diff --quiet && git diff --staged --quiet || (git commit -m "Auto-update weather" && git push)
 
