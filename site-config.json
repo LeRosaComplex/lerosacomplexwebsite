@@ -1,0 +1,26 @@
+{
+  "complex_name": "Your Complex Name",
+  "tagline": "Official Community Information Portal",
+  "banner_image": "images/banner.jpg",
+  "weconnectu_url": "https://weconnectu.co.za",
+  "trustee_group_email": "trustees-complex@googlegroups.com",
+  "managing_agent": {
+    "agency_name": "Example Property Management",
+    "portfolio_manager": "Jane Doe",
+    "email": "jane@exampleproperties.co.za",
+    "office_phone": "021 555 0100",
+    "after_hours_emergency": "082 555 0199"
+  },
+  "important_info": {
+    "bin_collection_day": "Wednesdays (bins out by 07:00)",
+    "security_control_room": "021 555 0911",
+    "municipal_faults": "0860 103 089 (City of Cape Town)"
+  },
+  "notices": [
+    {
+      "title": "Welcome to our new complex website",
+      "date": "2026-11-26",
+      "message": "Registered owners can log into WeConnectU for levy statements, AGM packs, and conduct rules."
+    }
+  ]
+}
