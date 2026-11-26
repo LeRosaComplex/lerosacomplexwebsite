@@ -1,0 +1,70 @@
+media:
+  input: images
+  output: images
+
+content:
+  - name: settings
+    label: Complex Details & Notices
+    type: file
+    path: site-config.json
+    fields:
+      - name: complex_name
+        label: Complex Name
+        type: string
+      - name: tagline
+        label: Subtitle / Tagline
+        type: string
+      - name: banner_image
+        label: Hero Banner Image
+        type: image
+      - name: weconnectu_url
+        label: WeConnectU Portal Link
+        type: string
+      - name: trustee_group_email
+        label: Trustee Google Group Email
+        type: string
+      - name: managing_agent
+        label: Managing Agency Details
+        type: object
+        fields:
+          - name: agency_name
+            label: Agency Name
+            type: string
+          - name: portfolio_manager
+            label: Portfolio Manager Name
+            type: string
+          - name: email
+            label: Manager Email
+            type: string
+          - name: office_phone
+            label: Office Phone
+            type: string
+          - name: after_hours_emergency
+            label: After-Hours Emergency Phone
+            type: string
+      - name: important_info
+        label: Complex Schedules & Emergency Numbers
+        type: object
+        fields:
+          - name: bin_collection_day
+            label: Bin Collection Day
+            type: string
+          - name: security_control_room
+            label: Estate / Armed Response Control Room
+            type: string
+          - name: municipal_faults
+            label: Municipal Faults Number
+            type: string
+      - name: notices
+        label: Community Notices
+        type: list
+        fields:
+          - name: title
+            label: Notice Title
+            type: string
+          - name: date
+            label: Date
+            type: date
+          - name: message
+            label: Message
+            type: text
